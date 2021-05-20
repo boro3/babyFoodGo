@@ -64,8 +64,7 @@ func UploadProfilePicture(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, nil)
 
 	}
-
-	return c.JSON(http.StatusOK, filename)
+	return c.String(http.StatusOK, filename)
 }
 
 //Handler fucntion for uploading recipe picture
@@ -79,7 +78,7 @@ func UploadRecipePicture(c echo.Context) error {
 	allowedSize := 1 * 1024 * 1024
 
 	if allowedSize <= int(file.Size) {
-		return c.JSON(http.StatusBadRequest, "Bad Request!: File too large!")
+		return c.JSON(http.StatusBadRequest, `Bad Request!: File too large!`)
 	}
 
 	src, err := file.Open()
@@ -122,7 +121,7 @@ func UploadRecipePicture(c echo.Context) error {
 
 	}
 
-	return c.JSON(http.StatusOK, filename)
+	return c.String(http.StatusOK, filename)
 }
 
 //Function for downloading profile picture

@@ -7,7 +7,6 @@ import (
 	"babyFood/handlers/userhandler"
 	"babyFood/pkg/auth"
 	"babyFood/pkg/db"
-	"fmt"
 	"os"
 
 	"github.com/labstack/echo/v4"
@@ -27,6 +26,7 @@ func main() {
 	}
 
 	u.Use(middleware.JWTWithConfig(config))
+	e.Use(middleware.CORS())
 
 	u.GET("", userhandler.GetUsers)
 	u.GET("/:id", userhandler.GetUser)
@@ -41,6 +41,7 @@ func main() {
 	r.PUT("/:id", recipehandler.UpdateRecipe, middleware.JWTWithConfig(config))
 	r.DELETE("/:id", recipehandler.DeleteRecipe, middleware.JWTWithConfig(config))
 	r.GET("/new", recipehandler.GetNewRecipes)
+	//r.GET("/filter", recipehandler.GetRecipe)
 	r.GET("/user", recipehandler.GetUserRecipes, middleware.JWTWithConfig(config))
 	r.GET("/:id", recipehandler.GetRecipe)
 
@@ -57,6 +58,5 @@ func main() {
 		port = "8080"
 	}
 	e.Start(":" + port)
-	fmt.Printf("Running...")
 
 }

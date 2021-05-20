@@ -14,8 +14,8 @@ type Recipe struct {
 	Recipe      string    `json:"recipe" db:"recipe"`
 	Prep_time   int       `json:"prep_time" db:"prep_time" validate:"required"`
 	Stars       int       `json:"stars" db:"stars"`
-	Persons     int       `json:"persons" db:"persons" validate:"required"`
-	Image       *string   `json:"img" db:"img"`
+	Persons     int       `json:"num_person" db:"persons" validate:"required"`
+	Image       *string   `json:"image" db:"image"`
 	Created     time.Time `json:"_created" db:"_created"`
 	Deleted     bool      `json:"_deleted" db:"_deleted"`
 }
@@ -130,8 +130,8 @@ var getNewRecipesQuery = "SELECT * FROM recipe WHERE _deleted = false ORDER BY _
 var getRecipesByUid = "SELECT * FROM recipe WHERE uid = ? AND _deleted = false;"
 
 var createRecipeQuery = `INSERT INTO recipe 
- (_id, uid, description , title, recipe , prep_time , persons) 
-VALUES(:_id, :uid, :description, :title, :recipe, :prep_time, :persons);`
+ (_id, uid, description , title, recipe , prep_time , persons, image) 
+VALUES(:_id, :uid, :description, :title, :recipe, :prep_time, :persons, :image);`
 
 var deleteRecipeQuery = "UPDATE recipe SET _deleted = ? WHERE _id = ?;"
 
@@ -141,7 +141,7 @@ var updateRecipeQuery = `UPDATE recipe SET
 	recipe = :recipe,
 	prep_time = :prep_time ,
 	persons = :persons ,
-	img = :img
+	image = :image
 WHERE _id =:_id;`
 
 var incrementRecipeStarsQuerry = `UPDATE recipe SET stars = stars + 1 WHERE _id = :_id`

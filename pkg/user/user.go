@@ -12,7 +12,7 @@ type User struct {
 	FirstName string    `json:"first_name" db:"first_name" validate:"required"`
 	LastName  string    `json:"last_name" db:"last_name" validate:"required"`
 	Dob       time.Time `json:"dob" db:"dob" validate:"required"`
-	Image     *string   `json:"img" db:"img"`
+	Image     *string   `json:"image" db:"image"`
 	Created   time.Time `json:"_created" db:"_created"`
 	Deleted   bool      `json:"_deleted" db:"_deleted"`
 }
@@ -96,7 +96,7 @@ var getUserQueryStr = "SELECT * FROM users WHERE _id = ?;"
 
 var getUsersQueryStr = "SELECT _id, first_name, last_name, email, dob FROM users WHERE _deleted = false;"
 
-var createUserQueryStr = `INSERT INTO users (_id, email, password , first_name, last_name, dob , img) VALUES(:_id, :email, :password, :first_name, :last_name, :dob, :img);`
+var createUserQueryStr = `INSERT INTO users (_id, email, password , first_name, last_name, dob , image) VALUES(:_id, :email, :password, :first_name, :last_name, :dob, :image);`
 
 var deleteUserQueryStr = "UPDATE users SET _deleted = ? WHERE _id = ?;"
 
@@ -105,7 +105,7 @@ var UpdateUserQueryStr = `UPDATE users SET
 	last_name = :last_name,
 	email = :email,
 	dob= :dob ,
-	img = :img,
+	image = :image,
 	password = :password
 WHERE _id =:_id;`
 
