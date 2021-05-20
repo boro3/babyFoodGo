@@ -17,6 +17,8 @@ type User struct {
 	Deleted   bool      `json:"_deleted" db:"_deleted"`
 }
 
+//GetUser from the database for provided id string as input.
+//If there is no resul found in the database empty User is returned
 func GetUser(id string) (User, error) {
 	var user User
 	err := db.DBClient.Get(&user, getUserQueryStr, id)
@@ -26,6 +28,8 @@ func GetUser(id string) (User, error) {
 	return user, nil
 }
 
+//GetUsers from the database.
+//If there is no resul found in the database empty array is returned.
 func GetUsers() ([]User, error) {
 	var users []User
 	err := db.DBClient.Select(&users, getUsersQueryStr)
@@ -35,6 +39,8 @@ func GetUsers() ([]User, error) {
 	return users, nil
 }
 
+//GetUser from the database for provided email  string as input.
+//If there is no resul found in the database empty User is returned
 func GetUserByEmail(email string) (User, error) {
 	var user User
 	err := db.DBClient.Get(&user, getUserByEmailQueryStr, email)
@@ -44,6 +50,8 @@ func GetUserByEmail(email string) (User, error) {
 	return user, nil
 }
 
+//CreateUser write new user in the database.
+//Returns error if unsuccessful.
 func (u User) CreateUser() error {
 	_, err := db.DBClient.NamedExec(createUserQueryStr, u)
 	if err != nil {
@@ -55,6 +63,8 @@ func (u User) CreateUser() error {
 	return nil
 }
 
+//DeleteUser from the database. String id as input is required.
+//Returns number of rows affected if unsuccessful 0 is returned
 func DeleteUser(id string) (int64, error) {
 	var a bool = true
 	res, err := db.DBClient.Exec(deleteUserQueryStr, a, id)
@@ -68,6 +78,8 @@ func DeleteUser(id string) (int64, error) {
 	return count, nil
 }
 
+//UpdateUser in the database. Attached function to User struct.
+//Returns count of rows affected as result.
 func (u User) UpdateUser() (int64, error) {
 	res, err := db.DBClient.NamedExec(UpdateUserQueryStr, u)
 	if err != nil {

@@ -9,6 +9,8 @@ import (
 
 var DBClient *sqlx.DB
 
+//InitializeDBConnection initializes database connection.
+//Sets the open connection on DBClient variable
 func InitializeDBConnection() {
 	databaseUserName := os.Getenv("DB_USERNAME")
 	databaseHost := os.Getenv("DB_HOST")

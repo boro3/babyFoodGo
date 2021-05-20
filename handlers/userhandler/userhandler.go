@@ -11,6 +11,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+//Handler function for getting single user from database on request id param.
 func GetUser(c echo.Context) error {
 	id := c.Param("id")
 	u, err := user.GetUser(id)
@@ -20,6 +21,7 @@ func GetUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, u)
 }
 
+//Handler function for getting users from database on request.
 func GetUsers(c echo.Context) error {
 	users, err := user.GetUsers()
 	if err != nil {
@@ -28,6 +30,7 @@ func GetUsers(c echo.Context) error {
 	return c.JSON(http.StatusOK, users)
 }
 
+//Handler function for deleteing user from database on request.
 func DeleteUser(c echo.Context) error {
 	id := c.Param("id")
 
@@ -45,6 +48,7 @@ func DeleteUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, count)
 }
 
+//Handler function for updating users from database from request.
 func Update(c echo.Context) error {
 	id := c.Param("id")
 
