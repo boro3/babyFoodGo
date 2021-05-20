@@ -7,14 +7,14 @@ import (
 )
 
 type Recipe struct {
-	ID          string    `json:"_id" db:"_id"`
-	Uid         string    `json:"uid" db:"uid"`
-	Description string    `json:"description" db:"description"`
-	Title       string    `json:"title" db:"title"`
+	ID          string    `json:"_id" db:"_id" validate:"required,uuid"`
+	Uid         string    `json:"uid" db:"uid" validate:"required,uuid"`
+	Description string    `json:"description" db:"description" validate:"required"`
+	Title       string    `json:"title" db:"title" validate:"required"`
 	Recipe      string    `json:"recipe" db:"recipe"`
-	Prep_time   int       `json:"prep_time" db:"prep_time"`
+	Prep_time   int       `json:"prep_time" db:"prep_time" validate:"required"`
 	Stars       int       `json:"stars" db:"stars"`
-	Persons     int       `json:"persons" db:"persons"`
+	Persons     int       `json:"persons" db:"persons" validate:"required"`
 	Image       *string   `json:"img" db:"img"`
 	Created     time.Time `json:"_created" db:"_created"`
 	Deleted     bool      `json:"_deleted" db:"_deleted"`
@@ -80,16 +80,28 @@ func DeleteRecipe(id string) (int64, error) {
 func (r Recipe) UpdateRecipe() (int64, error) {
 	res, err := db.DBClient.NamedExec(updateRecipeQuery, r)
 	if err != nil {
-		return 0, errors.New(err.Error())
+		return 0, err
 	}
 	count, err := res.RowsAffected()
 	if err != nil {
-		return count, errors.New(err.Error())
+		return count, err
 	}
 	return count, nil
 }
 
-var getRecipeQuery = "SELECT * FROM recipe WHERE _id = ?;"
+func (r Recipe) IncrementRecipeStars() (int64, error) {
+	res, err := db.DBClient.NamedExec(incrementRecipeStarsQuerry, r)
+	if err != nil {
+		return 0, errors.New(err.Error())
+	}
+	count, err := res.RowsAffected()
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+var getRecipeQuery = "SELECT * FROM recipe WHERE _id = ? AND _deleted = false;"
 var getRecipesQuery = "SELECT * FROM recipe WHERE _deleted = false ORDER BY stars DESC;"
 var getNewRecipesQuery = "SELECT * FROM recipe WHERE _deleted = false ORDER BY _created DESC LIMIT 3;"
 var getRecipesByUid = "SELECT * FROM recipe WHERE uid = ? AND _deleted = false;"
@@ -108,3 +120,5 @@ var updateRecipeQuery = `UPDATE recipe SET
 	persons = :persons ,
 	img = :img
 WHERE _id =:_id;`
+
+var incrementRecipeStarsQuerry = `UPDATE recipe SET stars = stars + 1 WHERE _id = :_id`
