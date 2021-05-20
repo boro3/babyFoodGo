@@ -50,7 +50,7 @@ func main() {
 	e.POST("/upload/profile", storagehandler.UploadProfilePicture)
 	e.GET("/download/profile/:img", storagehandler.DownloadProfilePicture)
 	e.POST("/upload/recipe", storagehandler.UploadRecipePicture)
-	e.GET("/download/recipe/:img", storagehandler.DownloadProfilePicture)
+	e.GET("/download/recipe/:img", storagehandler.DownloadRecipePicture)
 
 	port := os.Getenv("PORT")
 	if port == "" {

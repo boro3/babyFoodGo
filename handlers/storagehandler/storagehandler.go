@@ -1,15 +1,18 @@
 package storagehandler
 
 import (
-	"babyFood/pkg/functions/pictureformat"
-	"babyFood/pkg/functions/storagepath"
-	"fmt"
+	"babyFood/pkg/pictureformat"
+	"babyFood/pkg/randstring"
+	"babyFood/pkg/storagepath"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
 
+//Handler fucntion for uploading profile picture
+//If successful returns string with the name of the uploaded picture
 func UploadProfilePicture(c echo.Context) error {
 	file, err := c.FormFile("document")
 	if err != nil {
@@ -44,9 +47,13 @@ func UploadProfilePicture(c echo.Context) error {
 	defer src.Close()
 
 	filetype := http.DetectContentType(buff)
-	fmt.Println(filetype)
+	check := pictureformat.CheckFileFormat(filetype)
+	if !check {
+		return c.JSON(http.StatusBadRequest, "Bad Request!: Unsupported file format!")
+	}
 
-	dst, err := storagepath.Create(`./uploads/profile/` + file.Filename)
+	filename := randstring.RandString(8) + strings.Replace(file.Filename, " ", "_", -1)
+	dst, err := storagepath.Create(`./uploads/profile/` + filename)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, nil)
 
@@ -58,9 +65,11 @@ func UploadProfilePicture(c echo.Context) error {
 
 	}
 
-	return c.JSON(http.StatusOK, file.Filename)
+	return c.JSON(http.StatusOK, filename)
 }
 
+//Handler fucntion for uploading recipe picture
+//If successful returns string with the name of the uploaded picture
 func UploadRecipePicture(c echo.Context) error {
 	file, err := c.FormFile("document")
 	if err != nil {
@@ -100,7 +109,8 @@ func UploadRecipePicture(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "Bad Request!: Unsupported file format!")
 	}
 
-	dst, err := storagepath.Create(`./uploads/recipe/` + file.Filename)
+	filename := randstring.RandString(8) + strings.Replace(file.Filename, " ", "_", -1)
+	dst, err := storagepath.Create(`./uploads/recipe/` + filename)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, nil)
 
@@ -112,14 +122,18 @@ func UploadRecipePicture(c echo.Context) error {
 
 	}
 
-	return c.JSON(http.StatusOK, file.Filename)
+	return c.JSON(http.StatusOK, filename)
 }
 
+//Function for downloading profile picture
+//Returns file if the picture requested is found on storage
 func DownloadProfilePicture(c echo.Context) error {
 	img := c.Param("img")
 	return c.File(`./uploads/profile/` + img)
 }
 
+//Function for downloading recipe picture
+//Returns file if the picture requested is found on storage
 func DownloadRecipePicture(c echo.Context) error {
 	img := c.Param("img")
 	return c.File(`./uploads/recipe/` + img)
