@@ -6,12 +6,12 @@ import (
 )
 
 type User struct {
-	ID        string    `json:"_id" db:"_id"`
+	ID        string    `json:"_id" db:"_id" validate:"required,uuid"`
 	Email     string    `json:"email" db:"email" validate:"required,email"`
-	Password  string    `json:"password" db:"password" validate:"required"`
+	Password  string    `json:"password" db:"password" validate:"required,gte=4"`
 	FirstName string    `json:"first_name" db:"first_name" validate:"required"`
 	LastName  string    `json:"last_name" db:"last_name" validate:"required"`
-	Dob       time.Time `json:"dob" db:"dob"`
+	Dob       time.Time `json:"dob" db:"dob" validate:"required"`
 	Image     *string   `json:"img" db:"img"`
 	Created   time.Time `json:"_created" db:"_created"`
 	Deleted   bool      `json:"_deleted" db:"_deleted"`
@@ -35,7 +35,16 @@ func GetUsers() ([]User, error) {
 	return users, nil
 }
 
-func (u User) SaveUser() error {
+func GetUserByEmail(email string) (User, error) {
+	var user User
+	err := db.DBClient.Get(&user, getUserByEmailQueryStr, email)
+	if err != nil {
+		return user, err
+	}
+	return user, nil
+}
+
+func (u User) CreateUser() error {
 	_, err := db.DBClient.NamedExec(createUserQueryStr, u)
 	if err != nil {
 		return err
@@ -87,3 +96,5 @@ var UpdateUserQueryStr = `UPDATE users SET
 	img = :img,
 	password = :password
 WHERE _id =:_id;`
+
+var getUserByEmailQueryStr = "SELECT * FROM users WHERE email = ? AND _deleted = false;"

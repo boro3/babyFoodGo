@@ -1,6 +1,8 @@
 package db
 
 import (
+	"os"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
@@ -8,7 +10,13 @@ import (
 var DBClient *sqlx.DB
 
 func InitializeDBConnection() {
-	db, err := sqlx.Open("mysql", "root:******@tcp(localhost:3306)/food?parseTime=true")
+	databaseUserName := os.Getenv("DB_USERNAME")
+	databaseHost := os.Getenv("DB_HOST")
+	databasePort := os.Getenv("DB_PORT")
+	databaseName := os.Getenv("DB_NAME")
+	databasePassword := os.Getenv("DB_PASSWORD")
+	connectionString := (databaseUserName + ":" + databasePassword + "@tcp(" + databaseHost + ":" + databasePort + ")/" + databaseName + "?parseTime=true")
+	db, err := sqlx.Open("mysql", connectionString)
 	if err != nil {
 		panic(err.Error())
 	}
