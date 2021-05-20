@@ -2,7 +2,7 @@ package userhandler
 
 import (
 	"babyFood/pkg/auth"
-	"babyFood/pkg/functions/password"
+	"babyFood/pkg/password"
 	"babyFood/pkg/user"
 	"net/http"
 
