@@ -37,6 +37,7 @@ func CreateRecipe(c echo.Context) error {
 	return c.JSON(http.StatusCreated, "Created")
 }
 
+//Handler function for getting all recipes from database on request.
 func GetRecipes(c echo.Context) error {
 	recipes, err := recipe.GetRecipes()
 	if err != nil {
@@ -45,6 +46,7 @@ func GetRecipes(c echo.Context) error {
 	return c.JSON(http.StatusOK, recipes)
 }
 
+//Handler function for getting three newest recipes from database on request.
 func GetNewRecipes(c echo.Context) error {
 	recipes, err := recipe.GetNewRecipes()
 	if err != nil {
@@ -53,6 +55,7 @@ func GetNewRecipes(c echo.Context) error {
 	return c.JSON(http.StatusOK, recipes)
 }
 
+//Handler function for getting single recipe from  database on request id param.
 func GetRecipe(c echo.Context) error {
 	id := c.Param("id")
 	r, err := recipe.GetRecipe(id)
@@ -62,10 +65,11 @@ func GetRecipe(c echo.Context) error {
 	return c.JSON(http.StatusOK, r)
 }
 
+//Handler function for getting all recipes for jwt from database on request.
 func GetUserRecipes(c echo.Context) error {
 	token := c.Get("user").(*jwt.Token)
-	claims := token.Claims.(auth.JwtCustomClaims)
-	token_id := claims.Id
+	claims := token.Claims.(*auth.JwtCustomClaims)
+	token_id := claims.ID
 
 	recipes, err := recipe.GetRecipesByUid(token_id)
 	if err != nil {
@@ -74,6 +78,7 @@ func GetUserRecipes(c echo.Context) error {
 	return c.JSON(http.StatusOK, recipes)
 }
 
+//Handler function for deleing recipe from database for provided id param on request
 func DeleteRecipe(c echo.Context) error {
 	id := c.Param("id")
 
@@ -96,6 +101,7 @@ func DeleteRecipe(c echo.Context) error {
 	return c.JSON(http.StatusOK, count)
 }
 
+//Handler function for updating recipe from database for provided id param on request and valid jwt
 func UpdateRecipe(c echo.Context) error {
 	id := c.Param("id")
 
@@ -129,6 +135,7 @@ func UpdateRecipe(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
+//Handler fucnction for incrementing field "stars" on recipe for provided id param on request.
 func IncrementStars(c echo.Context) error {
 	id := c.Param("id")
 

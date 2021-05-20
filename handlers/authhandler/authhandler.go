@@ -14,6 +14,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+//Handler function for creating users from request.
 func CreateUser(c echo.Context) error {
 	u := new(user.User)
 	err := c.Bind(u)
@@ -40,6 +41,7 @@ func CreateUser(c echo.Context) error {
 	return c.JSON(http.StatusCreated, "Created")
 }
 
+//Handler function for issuing jwt tokens if the request provieds corect data.
 func Login(c echo.Context) error {
 	loginData := new(user.User)
 	err := c.Bind(loginData)
@@ -60,7 +62,7 @@ func Login(c echo.Context) error {
 
 	valid := password.CheckPasswordHash(loginData.Password, u.Password)
 	if !valid {
-		return c.JSON(http.StatusForbidden, err.Error())
+		return c.JSON(http.StatusForbidden, "Wrong Password")
 	}
 
 	claims := auth.JwtCustomClaims{

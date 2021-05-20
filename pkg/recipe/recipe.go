@@ -20,6 +20,9 @@ type Recipe struct {
 	Deleted     bool      `json:"_deleted" db:"_deleted"`
 }
 
+//Function for getting single recipe from database.
+//String id of the recipe requestet as input
+//If recipe found in databse returns Recipe struct or empty recipe struct if recipe is not found
 func GetRecipe(id string) (Recipe, error) {
 	var recipe Recipe
 	err := db.DBClient.Get(&recipe, getRecipeQuery, id)
@@ -29,6 +32,9 @@ func GetRecipe(id string) (Recipe, error) {
 	return recipe, nil
 }
 
+//Function for getting all recipe from database.
+//If successful returns array of Recipe struct if not error
+//Recipes are ordered by "stars" in descending order. If there are no recipes empty array is returned
 func GetRecipes() ([]Recipe, error) {
 	var recipes []Recipe
 	err := db.DBClient.Select(&recipes, getRecipesQuery)
@@ -38,6 +44,9 @@ func GetRecipes() ([]Recipe, error) {
 	return recipes, nil
 }
 
+//Function for getting three newest recipe from database.
+//If successful returns array of Recipe struct if not error
+//Recipes are ordered by _created in descending order if no recipes are found empty array is returned
 func GetNewRecipes() ([]Recipe, error) {
 	var recipes []Recipe
 	err := db.DBClient.Select(&recipes, getNewRecipesQuery)
@@ -47,6 +56,8 @@ func GetNewRecipes() ([]Recipe, error) {
 	return recipes, nil
 }
 
+//Function for writing recipe into the database.
+//The fucntion is attached to Recipe structure.
 func (r Recipe) CreateRecipe() error {
 	_, err := db.DBClient.NamedExec(createRecipeQuery, r)
 	if err != nil {
@@ -55,6 +66,9 @@ func (r Recipe) CreateRecipe() error {
 	return nil
 }
 
+//Function for getting all recipe from database of single user.
+//String of the user id as input is required
+//returns array of recipes or empty array if there is none
 func GetRecipesByUid(uid string) ([]Recipe, error) {
 	var recipes []Recipe
 	err := db.DBClient.Select(&recipes, getRecipesByUid, uid)
@@ -64,6 +78,9 @@ func GetRecipesByUid(uid string) ([]Recipe, error) {
 	return recipes, nil
 }
 
+//Fucntion for deleting recipe from database.
+//String of the recipe id is required as input
+//Returns number int64 of the rows affected in the database
 func DeleteRecipe(id string) (int64, error) {
 	var a bool = true
 	res, err := db.DBClient.Exec(deleteRecipeQuery, a, id)
@@ -77,6 +94,9 @@ func DeleteRecipe(id string) (int64, error) {
 	return count, nil
 }
 
+//Function for updating recipe record in database.
+//String of the recipe id is required as input.
+//Returns number int64 of the rows affected in the database.
 func (r Recipe) UpdateRecipe() (int64, error) {
 	res, err := db.DBClient.NamedExec(updateRecipeQuery, r)
 	if err != nil {
@@ -89,6 +109,9 @@ func (r Recipe) UpdateRecipe() (int64, error) {
 	return count, nil
 }
 
+//Function for incrementing field "stars" from recipe record.
+//This fucnion is attached to structure Recipe.
+//Returns number int64 of the rows affected in the database.
 func (r Recipe) IncrementRecipeStars() (int64, error) {
 	res, err := db.DBClient.NamedExec(incrementRecipeStarsQuerry, r)
 	if err != nil {
