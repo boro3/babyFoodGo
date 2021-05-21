@@ -59,10 +59,12 @@ func Update(c echo.Context) error {
 		return c.JSON(http.StatusForbidden, nil)
 	}
 
-	u, err := user.GetUser(id)
+	u, err := user.GetUserForUpdate(id)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
+
+	var oldPassword string = u.Password
 
 	err = c.Bind(&u)
 	if err != nil {
@@ -75,9 +77,11 @@ func Update(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	u.Password, err = password.HashPassword(u.Password)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+	if u.Password != oldPassword {
+		u.Password, err = password.HashPassword(u.Password)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err.Error())
+		}
 	}
 
 	res, err := u.UpdateUser()

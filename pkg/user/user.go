@@ -15,6 +15,7 @@ type User struct {
 	Image     *string   `json:"image" db:"image"`
 	Created   time.Time `json:"_created" db:"_created"`
 	Deleted   bool      `json:"_deleted" db:"_deleted"`
+	Modified  time.Time `json:"_modified" db:"_modified"`
 }
 
 //GetUser from the database for provided id string as input.
@@ -22,6 +23,17 @@ type User struct {
 func GetUser(id string) (User, error) {
 	var user User
 	err := db.DBClient.Get(&user, getUserQueryStr, id)
+	if err != nil {
+		return user, err
+	}
+	return user, nil
+}
+
+//GetUser from the database for provided id string as input. All data for user is returned password included.
+//If there is no resul found in the database empty User is returned
+func GetUserForUpdate(id string) (User, error) {
+	var user User
+	err := db.DBClient.Get(&user, getUserForUpdate, id)
 	if err != nil {
 		return user, err
 	}
@@ -92,9 +104,11 @@ func (u User) UpdateUser() (int64, error) {
 	return count, nil
 }
 
-var getUserQueryStr = "SELECT * FROM users WHERE _id = ?;"
+var getUserQueryStr = "SELECT _id, first_name, last_name, email, dob, image, _created, _modified FROM users WHERE _id = ? AND _deleted = false;"
 
-var getUsersQueryStr = "SELECT _id, first_name, last_name, email, dob FROM users WHERE _deleted = false;"
+var getUserForUpdate = "SELECT * FROM users WHERE _id = ? AND _deleted = false;"
+
+var getUsersQueryStr = "SELECT _id, first_name, last_name, email, dob, image, _created, _modified FROM users WHERE _deleted = false;"
 
 var createUserQueryStr = `INSERT INTO users (_id, email, password , first_name, last_name, dob , image) VALUES(:_id, :email, :password, :first_name, :last_name, :dob, :image);`
 
