@@ -12,6 +12,7 @@ type Recipe struct {
 	Description string    `json:"description" db:"description" validate:"required"`
 	Title       string    `json:"title" db:"title" validate:"required"`
 	Recipe      string    `json:"recipe" db:"recipe"`
+	Category    string    `json:"category" db:"category" validate:"required"`
 	Prep_time   int       `json:"prep_time" db:"prep_time" validate:"required"`
 	Stars       int       `json:"stars" db:"stars"`
 	Persons     int       `json:"num_person" db:"persons" validate:"required"`
@@ -78,6 +79,18 @@ func GetRecipesByUid(uid string) ([]Recipe, error) {
 	return recipes, nil
 }
 
+//Function for getting all recipe from database for given category.
+//String of the category as input is required
+//returns array of recipes or empty array if there is none
+func GetRecipesByCategory(category string) ([]Recipe, error) {
+	var recipes []Recipe
+	err := db.DBClient.Select(&recipes, getRecipesByCategory, category)
+	if err != nil {
+		return recipes, err
+	}
+	return recipes, nil
+}
+
 //Fucntion for deleting recipe from database.
 //String of the recipe id is required as input
 //Returns number int64 of the rows affected in the database
@@ -130,8 +143,8 @@ var getNewRecipesQuery = "SELECT * FROM recipe WHERE _deleted = false ORDER BY _
 var getRecipesByUid = "SELECT * FROM recipe WHERE uid = ? AND _deleted = false;"
 
 var createRecipeQuery = `INSERT INTO recipe 
- (_id, uid, description , title, recipe , prep_time , persons, image) 
-VALUES(:_id, :uid, :description, :title, :recipe, :prep_time, :persons, :image);`
+ (_id, uid, description , title, recipe, category, prep_time , persons, image) 
+VALUES(:_id, :uid, :description, :title, :recipe, :category, :prep_time, :persons, :image);`
 
 var deleteRecipeQuery = "UPDATE recipe SET _deleted = ? WHERE _id = ?;"
 
@@ -139,9 +152,12 @@ var updateRecipeQuery = `UPDATE recipe SET
 	description = :description ,
 	title = :title,
 	recipe = :recipe,
+	category= :category,
 	prep_time = :prep_time ,
 	persons = :persons ,
 	image = :image
 WHERE _id =:_id;`
 
 var incrementRecipeStarsQuerry = `UPDATE recipe SET stars = stars + 1 WHERE _id = :_id`
+
+var getRecipesByCategory = `SELECT * FROM RECIPE WHERE category = ? AND _deleted = false`

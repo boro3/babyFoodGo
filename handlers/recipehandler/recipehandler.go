@@ -78,6 +78,16 @@ func GetUserRecipes(c echo.Context) error {
 	return c.JSON(http.StatusOK, recipes)
 }
 
+//Handler function for getting all recipes for category queryparam from database on request.
+func GetRecipesByCategory(c echo.Context) error {
+	category := c.QueryParam("category")
+	r, err := recipe.GetRecipesByCategory(category)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, err.Error())
+	}
+	return c.JSON(http.StatusOK, r)
+}
+
 //Handler function for deleing recipe from database for provided id param on request
 func DeleteRecipe(c echo.Context) error {
 	id := c.Param("id")
