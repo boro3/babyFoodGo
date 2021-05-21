@@ -19,6 +19,7 @@ type Recipe struct {
 	Image       *string   `json:"image" db:"image"`
 	Created     time.Time `json:"_created" db:"_created"`
 	Deleted     bool      `json:"_deleted" db:"_deleted"`
+	Modified    time.Time `json:"_modified" db:"_modified"`
 }
 
 //Function for getting single recipe from database.
