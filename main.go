@@ -41,7 +41,7 @@ func main() {
 	r.PUT("/:id", recipehandler.UpdateRecipe, middleware.JWTWithConfig(config))
 	r.DELETE("/:id", recipehandler.DeleteRecipe, middleware.JWTWithConfig(config))
 	r.GET("/new", recipehandler.GetNewRecipes)
-	//r.GET("/filter", recipehandler.GetRecipe)
+	r.GET("/filter", recipehandler.GetRecipesByCategory)
 	r.GET("/user", recipehandler.GetUserRecipes, middleware.JWTWithConfig(config))
 	r.GET("/:id", recipehandler.GetRecipe)
 
